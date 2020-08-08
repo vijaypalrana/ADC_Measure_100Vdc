@@ -1,0 +1,119 @@
+
+ADC_Measure_100Vdc.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000094  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800040  00800040  000000e8  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000000e8  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000118  2**2
+                  CONTENTS, READONLY
+  4 .debug_info   00000401  00000000  00000000  00000154  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 000003c7  00000000  00000000  00000555  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_line   000000f7  00000000  00000000  0000091c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_str    00000166  00000000  00000000  00000a13  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0f c0       	rjmp	.+30     	; 0x20 <__ctors_end>
+   2:	16 c0       	rjmp	.+44     	; 0x30 <__bad_interrupt>
+   4:	15 c0       	rjmp	.+42     	; 0x30 <__bad_interrupt>
+   6:	14 c0       	rjmp	.+40     	; 0x30 <__bad_interrupt>
+   8:	13 c0       	rjmp	.+38     	; 0x30 <__bad_interrupt>
+   a:	12 c0       	rjmp	.+36     	; 0x30 <__bad_interrupt>
+   c:	11 c0       	rjmp	.+34     	; 0x30 <__bad_interrupt>
+   e:	10 c0       	rjmp	.+32     	; 0x30 <__bad_interrupt>
+  10:	0f c0       	rjmp	.+30     	; 0x30 <__bad_interrupt>
+  12:	0e c0       	rjmp	.+28     	; 0x30 <__bad_interrupt>
+  14:	0d c0       	rjmp	.+26     	; 0x30 <__bad_interrupt>
+  16:	0c c0       	rjmp	.+24     	; 0x30 <__bad_interrupt>
+  18:	0b c0       	rjmp	.+22     	; 0x30 <__bad_interrupt>
+  1a:	0a c0       	rjmp	.+20     	; 0x30 <__bad_interrupt>
+  1c:	09 c0       	rjmp	.+18     	; 0x30 <__bad_interrupt>
+  1e:	08 c0       	rjmp	.+16     	; 0x30 <__bad_interrupt>
+
+00000020 <__ctors_end>:
+  20:	11 27       	eor	r17, r17
+  22:	1f bf       	out	0x3f, r17	; 63
+  24:	cf e5       	ldi	r28, 0x5F	; 95
+  26:	d0 e0       	ldi	r29, 0x00	; 0
+  28:	de bf       	out	0x3e, r29	; 62
+  2a:	cd bf       	out	0x3d, r28	; 61
+  2c:	02 d0       	rcall	.+4      	; 0x32 <main>
+  2e:	30 c0       	rjmp	.+96     	; 0x90 <_exit>
+
+00000030 <__bad_interrupt>:
+  30:	e7 cf       	rjmp	.-50     	; 0x0 <__vectors>
+
+00000032 <main>:
+  32:	f8 94       	cli
+  34:	0e d0       	rcall	.+28     	; 0x52 <AdcInit>
+  36:	1a d0       	rcall	.+52     	; 0x6c <UartStart>
+  38:	78 94       	sei
+  3a:	27 d0       	rcall	.+78     	; 0x8a <WRP_MeasuredVoltage>
+  3c:	21 d0       	rcall	.+66     	; 0x80 <UartSendData>
+  3e:	4f ef       	ldi	r20, 0xFF	; 255
+  40:	5f eb       	ldi	r21, 0xBF	; 191
+  42:	61 e2       	ldi	r22, 0x21	; 33
+  44:	41 50       	subi	r20, 0x01	; 1
+  46:	50 40       	sbci	r21, 0x00	; 0
+  48:	60 40       	sbci	r22, 0x00	; 0
+  4a:	e1 f7       	brne	.-8      	; 0x44 <__SREG__+0x5>
+  4c:	00 c0       	rjmp	.+0      	; 0x4e <__SREG__+0xf>
+  4e:	00 00       	nop
+  50:	f4 cf       	rjmp	.-24     	; 0x3a <main+0x8>
+
+00000052 <AdcInit>:
+  52:	da 9a       	sbi	0x1b, 2	; 27
+  54:	4d b3       	in	r20, 0x1d	; 29
+  56:	45 64       	ori	r20, 0x45	; 69
+  58:	4d bb       	out	0x1d, r20	; 29
+  5a:	08 95       	ret
+
+0000005c <AdcGetResult>:
+  5c:	ee 9a       	sbi	0x1d, 6	; 29
+  5e:	ee 99       	sbic	0x1d, 6	; 29
+  60:	fe cf       	rjmp	.-4      	; 0x5e <AdcGetResult+0x2>
+  62:	4a b3       	in	r20, 0x1a	; 26
+  64:	89 b3       	in	r24, 0x19	; 25
+  66:	90 e0       	ldi	r25, 0x00	; 0
+  68:	94 2b       	or	r25, r20
+  6a:	08 95       	ret
+
+0000006c <UartStart>:
+  6c:	47 e1       	ldi	r20, 0x17	; 23
+  6e:	50 e0       	ldi	r21, 0x00	; 0
+  70:	5a b9       	out	0x0a, r21	; 10
+  72:	49 b9       	out	0x09, r20	; 9
+  74:	4d b1       	in	r20, 0x0d	; 13
+  76:	48 61       	ori	r20, 0x18	; 24
+  78:	4d b9       	out	0x0d, r20	; 13
+  7a:	46 e0       	ldi	r20, 0x06	; 6
+  7c:	4c b9       	out	0x0c, r20	; 12
+  7e:	08 95       	ret
+
+00000080 <UartSendData>:
+  80:	4e b1       	in	r20, 0x0e	; 14
+  82:	45 ff       	sbrs	r20, 5
+  84:	fd cf       	rjmp	.-6      	; 0x80 <UartSendData>
+  86:	88 b9       	out	0x08, r24	; 8
+  88:	08 95       	ret
+
+0000008a <WRP_MeasuredVoltage>:
+  8a:	e8 df       	rcall	.-48     	; 0x5c <AdcGetResult>
+  8c:	80 e0       	ldi	r24, 0x00	; 0
+  8e:	08 95       	ret
+
+00000090 <_exit>:
+  90:	f8 94       	cli
+
+00000092 <__stop_program>:
+  92:	ff cf       	rjmp	.-2      	; 0x92 <__stop_program>
